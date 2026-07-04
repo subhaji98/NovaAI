@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nova AI</title>
+
+<meta name="description" content="Nova AI Assistant">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= Sidebar ================= -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                <svg viewBox="0 0 48 48" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#0B0E1A" d="M24 2 L27 20 L46 24 L27 28 L24 46 L21 28 L2 24 L21 20 Z"/>
+                </svg>
+            </div>
+
+            <div class="logo-text">
+
+                <h2>Nova AI</h2>
+                
+
+            </div>
+
+        </div>
+
+
+        <button class="new-chat-btn" id="newChatBtn">
+
+            + New Chat
+
+        </button>
+
+
+        <div class="history-title">
+
+            Recent Chats
+
+        </div>
+
+
+        <div
+            id="chatHistory"
+            class="chat-history">
+
+        </div>
+
+
+        <div class="sidebar-footer">
+
+            <button id="clearChats">
+
+                Clear History
+
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- ================= Main ================= -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <header class="topbar">
+
+            <button
+                class="mobile-menu"
+                id="menuButton"
+                aria-label="Open menu">
+
+                ☰
+
+            </button>
+
+            <div class="topbar-brand">
+                <svg viewBox="0 0 48 48" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="topbarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#F0A93E"/>
+                            <stop offset="100%" stop-color="#4FD1C5"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#topbarGrad)" d="M24 2 L27 20 L46 24 L27 28 L24 46 L21 28 L2 24 L21 20 Z"/>
+                </svg>
+                <div class="title">Nova</div>
+            </div>
+
+            <div class="tagline"> Ask what you want to know </div>
+
+            <div class="top-actions">
+
+                <button id="themeToggle" aria-label="Toggle theme">
+
+                    🌙
+
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- Chat -->
+
+        <section
+            id="chatContainer"
+            class="chat-container">
+
+            <div
+                class="welcome"
+                id="welcome">
+
+                <div class="welcome-icon">
+                    <svg viewBox="0 0 48 48" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#0B0E1A" d="M24 2 L27 20 L46 24 L27 28 L24 46 L21 28 L2 24 L21 20 Z"/>
+                    </svg>
+                </div>
+
+                <h1>
+
+                    Welcome to Nova
+
+                </h1>
+
+                <p>
+
+                    Ask anythin...
+
+                </p>
+
+                <div class="example-grid">
+
+                    <button class="example">
+
+                        Explain Kubernetes like I'm a beginner.
+
+                    </button>
+
+                    <button class="example">
+
+                        Create a Python REST API.
+
+                    </button>
+
+                    <button class="example">
+
+                        Help me prepare for AWS interviews.
+
+                    </button>
+
+                    <button class="example">
+
+                        Write Terraform for an EC2 instance.
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Typing -->
+
+        <div
+            id="typingIndicator"
+            class="typing hidden">
+
+            Nova is thinking...
+
+        </div>
+
+        <!-- Composer -->
+
+        <div class="composer-wrap">
+
+            <div id="attachmentChip" class="attachment-chip hidden">
+                <span id="attachmentIcon" class="attachment-icon">📎</span>
+                <span id="attachmentName" class="attachment-name"></span>
+                <button id="removeAttachment" type="button" aria-label="Remove attachment">&times;</button>
+            </div>
+
+            <div class="composer">
+
+                <button id="attachButton" type="button" aria-label="Attach file or image" class="attach-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.5 8.5L9.5 16.5C8.4 17.6 6.6 17.6 5.5 16.5C4.4 15.4 4.4 13.6 5.5 12.5L13 5C13.8 4.2 15 4.2 15.8 5C16.6 5.8 16.6 7 15.8 7.8L9 14.5C8.6 14.9 8 14.9 7.6 14.5C7.2 14.1 7.2 13.5 7.6 13.1L13.5 7.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <textarea
+
+                    id="messageInput"
+
+                    rows="1"
+
+                    placeholder="Message Nova...">
+
+                </textarea>
+
+                <button id="sendButton" aria-label="Send message">
+
+                    Send
+
+                </button>
+
+            </div>
+
+        </div>
+            <!-- ================= Hidden File Upload ================= -->
+
+    <input
+        type="file"
+        id="fileInput"
+        accept=".txt,.md,.csv,.json,.log,.png,.jpg,.jpeg,.webp"
+        hidden
+    >
+
+    <!-- ================= Toast ================= -->
+
+    <div
+        id="toast"
+        class="toast">
+
+        Copied to clipboard
+
+    </div>
+
+    <!-- ================= Settings Modal ================= -->
+
+    <div
+        class="modal"
+        id="settingsModal">
+
+        <div class="modal-content">
+
+            <span
+                id="closeSettings"
+                class="modal-close">
+
+                &times;
+
+            </span>
+
+            <h2>
+
+                Settings
+
+            </h2>
+
+            <div class="setting-group">
+
+                <label>
+
+                    Theme
+
+                </label>
+
+                <select id="themeSelect">
+
+                    <option value="dark">
+
+                        Dark
+
+                    </option>
+
+                    <option value="light">
+
+                        Light
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="setting-group">
+
+                <label>
+
+                    AI Model
+
+                </label>
+
+                <select id="modelSelect">
+
+                    <option>
+
+                        openai/gpt-oss-120b
+
+                    </option>
+
+                    <option>
+
+                        openai/gpt-oss-20b
+
+                    </option>
+
+                    <option>
+
+                        qwen/qwen3.6-27b
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="setting-group">
+
+                <label>
+
+                    Streaming
+
+                </label>
+
+                <input
+                    checked
+                    id="streamToggle"
+                    type="checkbox">
+
+            </div>
+
+            <button
+                id="saveSettings"
+                class="new-chat-btn">
+
+                Save Settings
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ================= About Modal ================= -->
+
+    <div
+        id="aboutModal"
+        class="modal">
+
+        <div class="modal-content">
+
+            <span
+                id="closeAbout"
+                class="modal-close">
+
+                &times;
+
+            </span>
+
+            <h2>
+
+                About Nova
+
+            </h2>
+
+            <p>
+
+                Nova is an AI assistant powered by Groq.
+
+            </p>
+
+            <br>
+
+            <p>
+
+                Developed by
+
+                <strong>
+
+                    Subhajit Behera
+
+                </strong>
+
+            </p>
+
+            <br>
+
+            <p>
+
+                Flask • Groq • HTML • CSS • JavaScript
+
+            </p>
+
+        </div>
+
+    </div>
+
+        <!-- ================= Sidebar Overlay ================= -->
+
+    <div
+        id="sidebarOverlay"
+        class="sidebar-overlay hidden">
+    </div>
+
+    <!-- ================= Message Templates ================= -->
+
+    <template id="userMessageTemplate">
+
+        <div class="message user fade">
+
+            <div class="avatar user">
+
+                You
+
+            </div>
+
+            <div class="bubble">
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <template id="assistantMessageTemplate">
+
+        <div class="message bot fade">
+
+            <div class="avatar bot">
+
+                AI
+
+            </div>
+
+            <div class="bubble markdown-body">
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <!-- ================= Typing Template ================= -->
+
+    <template id="typingTemplate">
+
+        <div class="message bot typing-message">
+
+            <div class="avatar bot">
+
+                AI
+
+            </div>
+
+            <div class="bubble">
+
+                <div class="loading-dots">
+
+                    <span></span>
+
+                    <span></span>
+
+                    <span></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <!-- ================= Empty History ================= -->
+
+    <template id="historyTemplate">
+
+        <div class="chat-item">
+
+            <div class="chat-item-title">
+
+                New Chat
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <!-- ================= Keyboard Shortcuts ================= -->
+
+    <div
+        id="shortcutHelp"
+        class="hidden">
+
+        <ul>
+
+            <li>
+
+                <strong>Enter</strong> → Send Message
+
+            </li>
+
+            <li>
+
+                <strong>Shift + Enter</strong> → New Line
+
+            </li>
+
+            <li>
+
+                <strong>Ctrl + K</strong> → Focus Search
+
+            </li>
+
+            <li>
+
+                <strong>Ctrl + B</strong> → Toggle Sidebar
+
+            </li>
+
+        </ul>
+
+    </div>
+
+    <!-- ================= Search ================= -->
+
+    <input
+
+        id="historySearch"
+
+        class="hidden"
+
+        placeholder="Search chats..."
+
+        autocomplete="off"
+
+    >
+
+    <!-- ================= Hidden Loader ================= -->
+
+    <div
+
+        id="globalLoader"
+
+        class="hidden center"
+
+    >
+
+        <div class="spinner"></div>
+
+    </div>
+
+    <!-- ================= Hidden Status ================= -->
+
+    <div
+
+        id="connectionStatus"
+
+        class="hidden">
+
+        Connected
+
+    </div>
+
+    </main>
+
+</div>
+       <!-- ==========================================================
+         EXTERNAL LIBRARIES
+    =========================================================== -->
+
+    <!-- Marked (Markdown) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+    <!-- DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
+    <script>
+
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            if (window.hljs) {
+                hljs.highlightAll();
+            }
+
+            const textarea = document.getElementById("messageInput");
+
+            if (textarea) {
+                textarea.focus();
+            }
+
+        });
+
+    </script>
+
+    <!-- ==========================================================
+         APPLICATION
+    =========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
